@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mountain Shredder</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+      background: #87CEEB;
+    }
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    #menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      z-index: 100;
+    }
+    #menu h1 {
+      font-size: 48px;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+    .difficulty-label {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+    .difficulty-options {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .difficulty-btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: 3px solid #3498db;
+      background: white;
+      color: #3498db;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .difficulty-btn:hover {
+      background: #3498db;
+      color: white;
+    }
+    .difficulty-btn.selected {
+      background: #3498db;
+      color: white;
+    }
+    #start-btn {
+      padding: 20px 60px;
+      font-size: 28px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    #start-btn:hover {
+      background: #c0392b;
+    }
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #score-display {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      z-index: 50;
+      display: none;
+    }
+    #game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      z-index: 100;
+      display: none;
+    }
+    #game-over h2 {
+      font-size: 42px;
+      color: #e74c3c;
+      margin-bottom: 20px;
+    }
+    #final-score {
+      font-size: 32px;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+    #restart-btn {
+      padding: 15px 40px;
+      font-size: 22px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #restart-btn:hover {
+      background: #2980b9;
+    }
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 18px;
+      z-index: 50;
+      display: none;
+    }
+    #back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 10px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      z-index: 50;
+      transition: all 0.3s;
+    }
+    #back-btn:hover {
+      background: rgba(0, 0, 0, 0.9);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <button id="back-btn" onclick="window.history.back()">← Back to Scratch Page</button>
+    <div id="menu">
+      <h1>⛷️ Mountain Shredder</h1>
+      <div class="difficulty-label">Difficulty:</div>
+      <div class="difficulty-options">
+        <button class="difficulty-btn selected" data-difficulty="easy">🐰 Bunny Hill</button>
+        <button class="difficulty-btn" data-difficulty="medium">💎 Blue Diamond</button>
+        <button class="difficulty-btn" data-difficulty="hard">⬛ Black Diamond</button>
+      </div>
+      <button id="start-btn">SHRED!</button>
+    </div>
+    <div id="score-display">Score: <span id="score">0</span></div>
+    <div id="instructions">Press SPACE to Jump!</div>
+    <div id="game-over">
+      <h2>💥 Wipeout!</h2>
+      <div id="final-score">Final Score: <span id="final-score-value">0</span></div>
+      <button id="restart-btn">Try Again</button>
+    </div>
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let gameState = 'menu';
+    let difficulty = 'easy';
+    let score = 0;
+    let gameSpeed = 5;
+    let frameCount = 0;
+
+    const player = {
+      x: canvas.width / 2,
+      y: canvas.height * 0.2,
+      width: 50,
+      height: 70,
+      velocityY: 0,
+      isJumping: false
+    };
+
+    const obstacles = [];
+    const keys = {};
+
+    const difficultySettings = {
+      easy: { speed: 5, spawnRate: 0.015 },
+      medium: { speed: 8, spawnRate: 0.025 },
+      hard: { speed: 12, spawnRate: 0.035 }
+    };
+
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        difficulty = btn.dataset.difficulty;
+      });
+    });
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('restart-btn').addEventListener('click', restartGame);
+
+    document.addEventListener('keydown', (e) => {
+      keys[e.key] = true;
+      if (e.key === ' ' && gameState === 'playing' && !player.isJumping) {
+        e.preventDefault();
+        player.velocityY = -15;
+        player.isJumping = true;
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      keys[e.key] = false;
+    });
+
+    function startGame() {
+      gameState = 'playing';
+      document.getElementById('menu').style.display = 'none';
+      document.getElementById('score-display').style.display = 'block';
+      document.getElementById('instructions').style.display = 'block';
+      
+      const settings = difficultySettings[difficulty];
+      gameSpeed = settings.speed;
+      
+      score = 0;
+      frameCount = 0;
+      obstacles.length = 0;
+      player.x = canvas.width / 2;
+      player.velocityY = 0;
+      player.isJumping = false;
+      
+      gameLoop();
+    }
+
+    function restartGame() {
+      document.getElementById('game-over').style.display = 'none';
+      document.getElementById('menu').style.display = 'block';
+      gameState = 'menu';
+    }
+
+    function drawBackground() {
+      // Sky
+      ctx.fillStyle = '#87CEEB';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Snow ground
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawPlayer() {
+      ctx.save();
+      ctx.translate(player.x, player.y);
+
+      // Snowboard
+      ctx.fillStyle = '#E74C3C';
+      ctx.fillRect(-25, 35, 50, 10);
+      
+      // Body
+      ctx.fillStyle = '#3498DB';
+      ctx.fillRect(-15, 0, 30, 40);
+      
+      // Head
+      ctx.fillStyle = '#F39C12';
+      ctx.beginPath();
+      ctx.arc(0, -10, 15, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Helmet
+      ctx.fillStyle = '#E74C3C';
+      ctx.beginPath();
+      ctx.arc(0, -10, 15, Math.PI, 0);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function createObstacle() {
+      const settings = difficultySettings[difficulty];
+      if (Math.random() < settings.spawnRate) {
+        const type = Math.random() < 0.5 ? 'tree' : 'rock';
+        const x = Math.random() * (canvas.width - 100) + 50;
+        obstacles.push({
+          x: x,
+          y: canvas.height + 100,
+          type: type,
+          width: type === 'tree' ? 40 : 60,
+          height: type === 'tree' ? 80 : 50
+        });
+      }
+    }
+
+    function drawObstacles() {
+      obstacles.forEach((obs, index) => {
+        obs.y -= gameSpeed;
+
+        if (obs.type === 'tree') {
+          // Tree trunk
+          ctx.fillStyle = '#8B4513';
+          ctx.fillRect(obs.x - 10, obs.y + 40, 20, 40);
+          
+          // Tree leaves
+          ctx.fillStyle = '#228B22';
+          ctx.beginPath();
+          ctx.moveTo(obs.x, obs.y);
+          ctx.lineTo(obs.x - 30, obs.y + 50);
+          ctx.lineTo(obs.x + 30, obs.y + 50);
+          ctx.closePath();
+          ctx.fill();
+          
+          ctx.beginPath();
+          ctx.moveTo(obs.x, obs.y + 20);
+          ctx.lineTo(obs.x - 25, obs.y + 60);
+          ctx.lineTo(obs.x + 25, obs.y + 60);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          // Rock
+          ctx.fillStyle = '#696969';
+          ctx.beginPath();
+          ctx.moveTo(obs.x, obs.y);
+          ctx.lineTo(obs.x + 30, obs.y + 20);
+          ctx.lineTo(obs.x + 25, obs.y + 50);
+          ctx.lineTo(obs.x - 25, obs.y + 50);
+          ctx.lineTo(obs.x - 30, obs.y + 20);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Collision detection
+        if (
+          player.x + 25 > obs.x - obs.width / 2 &&
+          player.x - 25 < obs.x + obs.width / 2 &&
+          player.y + 45 > obs.y &&
+          player.y < obs.y + obs.height &&
+          !player.isJumping
+        ) {
+          gameOver();
+        }
+
+        // Remove off-screen obstacles
+        if (obs.y < -100) {
+          obstacles.splice(index, 1);
+          score += 10;
+        }
+      });
+    }
+
+    function updatePlayer() {
+      // Horizontal movement
+      if (keys['ArrowLeft']) {
+        player.x = Math.max(player.x - 7, 50);
+      }
+      if (keys['ArrowRight']) {
+        player.x = Math.min(player.x + 7, canvas.width - 50);
+      }
+
+      // Jumping
+      if (player.isJumping) {
+        player.velocityY += 0.8;
+        player.y += player.velocityY;
+
+        if (player.y >= canvas.height * 0.2) {
+          player.y = canvas.height * 0.2;
+          player.velocityY = 0;
+          player.isJumping = false;
+        }
+      }
+    }
+
+    function gameOver() {
+      gameState = 'gameOver';
+      document.getElementById('game-over').style.display = 'block';
+      document.getElementById('final-score-value').textContent = score;
+      document.getElementById('instructions').style.display = 'none';
+      document.getElementById('score-display').style.display = 'none';
+    }
+
+    function gameLoop() {
+      if (gameState !== 'playing') return;
+
+      drawBackground();
+      drawObstacles();
+      drawPlayer();
+      updatePlayer();
+      createObstacle();
+
+      frameCount++;
+      score += 1;
+      document.getElementById('score').textContent = score;
+
+      // Gradually increase speed
+      if (frameCount % 500 === 0) {
+        gameSpeed += 0.5;
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      player.x = canvas.width / 2;
+    });
+  </script>
+</body>
+</html>

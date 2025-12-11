@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scratch Page — My Hobby</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/custom.css" />
+</head>
+<body>
+  <!-- Simple nav back to pro pages -->
+  <div class="top-nav">
+    <a href="index.html">← Back to Professional Site</a>
+    |
+    <a href="app.html">Go to My Web App</a>
+  </div>
+
+  <header class="page-header">
+    <h1 id="top">Snowboarding Adventures</h1>
+  </header>
+
+  <!-- Example of divs for layout -->
+  <div class="content-wrapper">
+    <div class="left-column">
+      <h2>What is Snowboarding?</h2>
+        <p>Snowboarding has exploded into a global sensation over the last two decades, and everyone seems to capture it a little differently. But on this page, we’re defining it in the simplest, and truest way: the sport with the most aura.</p>
+        <p>Snowboarding is the sport with the most aura. Nobody can truly understand how fun snowboarding is until they try it. From beginners simply riding down the mountain to professionals hucking backlips off clifs, snowboading allows each individual to express themselves through the thrill of the mountain. </p>
+
+      <!-- Nested list requirement -->
+      <h3>Here are 3 reasons why I personally enjoy snowbaording</h3>
+      <ol>
+        <li>
+          The Mountains
+          <ul>
+            <li>Fresh snow</li>
+            <li>Scenic views</li>
+            <li>Quiet mornings</li>
+          </ul>
+        </li>
+        <li>
+          The Challenge
+          <ul>
+            <li>Steep runs</li>
+            <li>Learning tricks</li>
+            <li>Always something new to try</li>
+          </ul>
+        </li>
+        <li>
+          The Community
+          <ul>
+            <li>Friends</li>
+            <li>Meeting new people</li>
+            <li>Opportunities to bond over a hobby</li>
+          </ul>
+        </li>
+      </ol>
+
+      <!-- On-page anchor link -->
+      <p>
+        Jump to my <a href="#tableau-section">favorite Tableau viz</a>.
+      </p>
+    </div>
+
+    <div class="right-column">
+      <!-- Custom image (not from Bootstrap theme) -->
+      <h2>Favorite Photo</h2>
+      <img src="img/Snowboard.jpeg" alt="Snowboarder on a mountain" class="feature-image" />
+
+      <!-- YouTube embed -->
+<h2>Inspirational Video</h2>
+<div class="video-wrapper">
+  <iframe
+    src="https://www.youtube.com/embed/IBah0mB3mz8?si=efE8FNr-zGYk6uN0"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
+
+    </div>
+  </div>
+
+  <!-- Tableau section with on-page anchor target -->
+  <div class="tableau-section" id="tableau-section">
+    <h2>Tableau Visualization</h2>
+    <p>
+    When and where should I snowboard? Below you will find the answer to this questions with information about the best resorts across the world!
+    </p>
+
+    <!-- Tableau embed placeholder -->
+<div class="tableau-section" id="tableau-section">
+  <h2>Cool Tableau Visualization</h2>
+  <p>Explore the best ski resorts based on weekly conditions:</p>
+
+  <div class='tableauPlaceholder' id='viz1765240387951' style='position: relative'>
+    <noscript>
+      <a href='#'>
+        <img alt='Tableau Viz'
+          src='https://public.tableau.com/static/images/To/TopSkiResorts/BestWeek/1_rss.png'
+          style='border: none' />
+      </a>
+    </noscript>
+
+    <object class='tableauViz' style='display:none;'>
+      <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+      <param name='embed_code_version' value='3' />
+      <param name='site_root' value='' />
+      <param name='name' value='TopSkiResorts/BestWeek' />
+      <param name='tabs' value='yes' />
+      <param name='toolbar' value='yes' />
+      <param name='static_image' value='https://public.tableau.com/static/images/To/TopSkiResorts/BestWeek/1.png' />
+      <param name='animate_transition' value='yes' />
+      <param name='display_static_image' value='yes' />
+      <param name='display_spinner' value='yes' />
+      <param name='display_overlay' value='yes' />
+      <param name='display_count' value='yes' />
+      <param name='language' value='en-US' />
+    </object>
+  </div>
+
+  <script type='text/javascript'>
+    var divElement = document.getElementById('viz1765240387951');
+    var vizElement = divElement.getElementsByTagName('object')[0];
+    vizElement.style.width = '100%';
+    vizElement.style.height = (divElement.offsetWidth * 0.75) + 'px';
+    var scriptElement = document.createElement('script');
+    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+    vizElement.parentNode.insertBefore(scriptElement, vizElement);
+  </script>
+</div>
+
+
+  <footer class="page-footer">
+    <p><a href="#top">Back to top ↑</a></p>
+  </footer>
+</body>
+</html>
